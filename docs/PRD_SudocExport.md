@@ -6,8 +6,6 @@
 | --- | --- |
 | Version du document | 1.0 — proposition de cadrage |
 | Date | 15 septembre 2026 |
-| Dépôt étudié | [azur-scd/sudoc_export](https://github.com/azur-scd/sudoc_export) |
-| Révision étudiée | `0355ce118f31e47c16bc1adfe21bede6525fb7a7` — commit « init » |
 | Sources du dépôt | `README.md` et `sudoc_export.py` |
 | Produit | Application graphique locale en Python, diffusion Windows envisagée |
 | Périmètre de ce PRD | Description de l’existant et spécification d’une version consolidée |
