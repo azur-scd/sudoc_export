@@ -77,6 +77,26 @@ def get_subfields(record, tag, *codes):
     return " ; ".join(values) if values else ""
 
 
+def _get_field_subfields(field, *codes):
+    """Retourne les sous-champs demandés pour une seule occurrence."""
+    parts = []
+    for code in codes:
+        for sf in field.findall(f"subfield[@code='{code}']"):
+            if sf.text:
+                parts.append(_clean(sf.text.strip()))
+    return ", ".join(parts)
+
+
+def _select_214_field(record):
+    """Retourne la première zone 214 admissible contenant $c."""
+    for field in record.findall("datafield[@tag='214']"):
+        if field.get("ind2") not in (None, "", "0", "1"):
+            continue
+        if _get_field_subfields(field, "c"):
+            return field
+    return None
+
+
 # Ponctuation ISBD précédant chaque sous-champ du 200
 _TITRE_PUNCT = {"a": "", "e": " : ", "h": ". ", "i": ", "}
 
@@ -247,11 +267,12 @@ def parse_record(record):
             auteurs.append(v)
     data["auteurs"] = " ; ".join(auteurs)
 
-    # Éditeur / lieu / date — préférence 214, sinon 210
-    if get_subfields(record, "214", "c"):
-        data["editeur"] = get_subfields(record, "214", "c")
-        data["lieu"]    = get_subfields(record, "214", "a")
-        data["date"]    = get_subfields(record, "214", "d")
+    # Éditeur / lieu / date — préférence 214 admissible, sinon 210
+    field_214 = _select_214_field(record)
+    if field_214 is not None:
+        data["editeur"] = _get_field_subfields(field_214, "c")
+        data["lieu"]    = _get_field_subfields(field_214, "a")
+        data["date"]    = _get_field_subfields(field_214, "d")
     else:
         data["editeur"] = get_subfields(record, "210", "c")
         data["lieu"]    = get_subfields(record, "210", "a")
