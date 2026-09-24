@@ -208,9 +208,9 @@ Ce tableau décrit **exactement l’extraction actuelle** et les points à conso
 | 3 | Titre | `200$a$e$h$i`, dans l’ordre du XML ; ponctuation reconstruite | Traiter les répétitions et éviter la concaténation de deux `$a` sans séparateur |
 | 4 | Mention de resp. | `200$f$g` | Préserver l’ordre pertinent et documenter la ponctuation |
 | 5 | Auteur(s) | `700/701/702`, puis `710/711`, sous-champs `$a$b` | Signaler que la colonne contient aussi d’autres responsabilités ; étudier `712` et les rôles en P2 |
-| 6 | Éditeur | Tous les `214$c` si présents, sinon `210$c` | Distinguer publication, production, diffusion et fabrication |
-| 7 | Lieu d’édition | `214$a` si le test sur `214$c` réussit, sinon `210$a` | Ne pas supprimer un lieu présent en 214 parce que `$c` est absent |
-| 8 | Date de publication | `214$d` selon la même condition, sinon `210$d` | Ne pas supprimer une date présente en 214 parce que `$c` est absent ; qualifier les dates de repli |
+| 6 | Éditeur | Premier `214$c` d’une zone 214 admissible (`ind2` vide, `0` ou `1`) ; à défaut, `210$c` | Expliciter le repli vers 210 et ne pas assimiler diffusion, fabrication ou copyright à un éditeur |
+| 7 | Lieu d’édition | `214$a` de la même zone 214 admissible retenue pour l’éditeur ; sinon `210$a` | Préserver l’association stricte entre lieu et mention retenue |
+| 8 | Date de publication | `214$d` de la même zone 214 admissible retenue pour l’éditeur ; sinon `210$d` | Préserver l’association stricte entre date et mention retenue, y compris en cas de repli vers 210 |
 | 9 | Date codée | Première `100$a`, tranche Python `[9:13]`, sans nettoyage préalable | Conserver la valeur textuelle ; ce n’est pas une validation d’année |
 | 10 | Pays d’édition | `102$a` | Conserver les codes ; libellés éventuels dans une évolution séparée |
 | 11 | Description physique | `215$a` uniquement | Maintenir ce périmètre ou décider explicitement d’ajouter `$c$d` |
@@ -228,9 +228,9 @@ Source : fonctions `parse_record`, `get_subfields`, `get_titre_200` et constante
 
 **Travaux universitaires.** Le script distingue `m` et `7` à la position 4 de `105$a`. La documentation Sudoc associe ces codes aux thèses et mémoires originels, et explique la correspondance entre sous-zones de saisie et positions du format d’export. La recette doit couvrir cette conversion et éviter de tester uniquement des exemples au format de saisie. Référence : [ABES — zone 105](https://documentation.abes.fr/sudoc/formats/unmb/zones/105.htm).
 
-**Adresse bibliographique.** Les indicateurs de 214 distinguent notamment publication, production, diffusion, fabrication et copyright. Le regroupement actuel de tous les `$c` sous « Éditeur » est donc insuffisant pour garantir la signification de la colonne. Référence : [ABES — zone 214](https://documentation.abes.fr/sudoc/formats/unmb/zones/214.htm).
+**Adresse bibliographique.** Les indicateurs de 214 distinguent notamment publication, production, diffusion, fabrication et copyright. La documentation doit donc expliciter que tous les `$c` de 214 ne relèvent pas automatiquement d’un éditeur. Référence : [ABES — zone 214](https://documentation.abes.fr/sudoc/formats/unmb/zones/214.htm).
 
-**Règle cible proposée pour 214/210 :** sélectionner d’abord les occurrences de publication (`ind2=0`) ; en leur absence, permettre les occurrences de production (`ind2=1`) en signalant la nature de la mention. Extraire séparément lieu, nom et date pour que l’absence du nom n’efface pas les deux autres informations. Un repli vers 210 doit être documenté et tracé ; les mentions de diffusion, fabrication et copyright ne doivent pas être présentées silencieusement comme des mentions de publication. Les cas complexes ou mixtes restent à valider sur corpus avant implémentation.
+**Règle retenue pour 214/210 :** interpréter `214$c` comme un éditeur uniquement pour une occurrence 214 dont le deuxième indicateur (`ind2`) est vide, `0` ou `1`. Le lieu `214$a` et la date `214$d` sont alors extraits de cette même occurrence. Pour toute autre valeur de `ind2`, `214$c` n’est pas présenté comme un éditeur. Si aucune zone 214 admissible ne contient `$c`, le traitement se replie sur `210$a`, `210$c` et `210$d`. Les mentions de diffusion, fabrication et copyright ne doivent pas être présentées silencieusement comme des mentions de publication.
 
 **Ponctuation.** Le nettoyage actuel retire systématiquement certains signes finaux dans `get_subfields`. La cible doit préserver les ponctuations porteuses de sens, notamment les points d’abréviation. Les règles d’affichage ne doivent pas altérer silencieusement les données bibliographiques.
 
@@ -297,8 +297,8 @@ Le produit fonctionne localement et envoie les PPN au service interrogé. Aucun 
 | DEF-03 | P0 | « Effacer » réinitialise `_results` pendant que le worker peut encore y ajouter des résultats ; les widgets sont manipulés dans ce worker | Résultats incomplets et état d’interface incohérent possibles | IHM-02 et IHM-03 |
 | DEF-04 | P0 | Sauvegarde uniquement aux multiples du seuil ; pas de sauvegarde de fin | Pour 150 entrées et un seuil de 100, la sauvegarde périodique ne contient que les 100 premières | EXP-04 |
 | DEF-05 | P0 | Une valeur de titre `=1+1` est enregistrée avec le type cellule `f` dans le test | Métadonnée interprétée comme formule | EXP-02 |
-| DEF-06 | P0 | Présence de `214$c` utilisée comme condition commune pour éditeur, lieu et date | Perte possible de lieu ou de date présents en 214 | Règles d’extraction indépendantes |
-| DEF-07 | P1 | Indicateurs 214 ignorés et ponctuation finale supprimée génériquement | Interprétation trompeuse ou altération des valeurs | Validation métier des règles |
+| DEF-06 | P1 | Documentation antérieure incomplète sur le rôle de `ind2` pour l’interprétation de `214$c` | Risque de confondre éditeur, diffuseur, fabricant ou mention de copyright | Alignement documentaire explicite sur la règle 214/210 |
+| DEF-07 | P1 | Documentation antérieure ambiguë sur l’association entre éditeur, lieu et date au sein d’une même 214 | Risque de mélange silencieux des mentions bibliographiques | Spécification explicite de la zone 214 retenue et du repli vers 210 |
 | DEF-08 | P1 | Encodages, tabulations et doublons traités de manière incomplète ou hétérogène | Échecs évitables et appels répétés | ENT-01 à ENT-08 |
 | DEF-09 | P1 | Pas de relance réseau, de reprise de session ou d’arrêt contrôlé | Coût des incidents sur les lots longs | Consolidation progressive |
 | DEF-10 | P1 | Documentation en décalage ; aucun fichier de dépendances ou test suivi dans l’arbre étudié | Diffusion et maintenance fragiles | Documentation et recette versionnées |
@@ -337,8 +337,8 @@ Les scénarios ci-dessous définissent des tests à réaliser sur la version cor
 | T06 | Fichiers UTF-8, UTF-8 BOM et UTF-16 BOM | Aucune pollution du premier PPN ; erreurs d’encodage compréhensibles |
 | T07 | Liste avec doublons et entrées invalides | Ordre et occurrences conservés ; aucun appel pour un invalide |
 | T08 | HTTP 404, 429, 500, timeout et erreur de connexion simulés | Classification correcte et tentatives conformes |
-| T09 | 214 contenant une date ou un lieu mais pas de `$c` | Valeurs présentes conservées |
-| T10 | Plusieurs 214 de natures différentes et coexistence avec 210 | Sélection conforme à la règle métier, sans mélange silencieux |
+| T09 | Aucune 214 admissible avec `$c`, mais présence de 214 et de 210 | Repli sur `210$a`, `210$c` et `210$d` |
+| T10 | Plusieurs 214 de natures différentes et coexistence avec 210 | Sélection d’une 214 dont `ind2` est vide, `0` ou `1`, sans interpréter les autres `214$c` comme des éditeurs et sans mélanger lieu/date d’une autre occurrence |
 | T11 | Titres à plusieurs `$a`, compléments, parties et écritures | Lisibilité, ordre et caractères préservés |
 | T12 | Thèse, mémoire, périodique, ressource avec leader incomplet | Type conforme au corpus ; repli explicite |
 | T13 | Titre `=1+1`, identifiants longs, caractères non latins | Cellules textuelles et classeur réouvrable |

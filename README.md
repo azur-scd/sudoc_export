@@ -87,7 +87,11 @@ Feuille principale : **Notices Sudoc**
 - Source : XML Sudoc récupéré via URL directe `{ppn}.xml`.
 - Titre : basé sur la zone 200 (notamment sous-zones `a/e/h/i`).
 - Responsabilités : zones 700/701/702 et collectivités 710/711.
-- Adresse bibliographique : zones 214, avec repli possible sur 210 selon présence des sous-zones.
+- Adresse bibliographique :
+  - `214$c` est interprété comme un éditeur uniquement si le deuxième indicateur (`ind2`) de la zone 214 est vide, `0` ou `1`.
+  - pour toute autre valeur de `ind2`, `214$c` n’est pas retenu comme éditeur ;
+  - le lieu (`214$a`) et la date (`214$d`) restent associés à la même zone 214 retenue ;
+  - si aucune zone 214 admissible ne contient `214$c`, repli sur `210$a`, `210$c` et `210$d`.
 - Lien Sudoc : URL vers la notice.
 
 > Les règles métier détaillées et arbitrages de consolidation sont documentés dans `docs/PRD_SudocExport.md`.
