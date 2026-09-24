@@ -226,8 +226,6 @@ Source : fonctions `parse_record`, `get_subfields`, `get_titre_200` et constante
 
 ### 7.1. Règles bibliographiques à fixer
 
-**Titre.** Le périmètre initial reste `200$a$e$h$i`. Le commentaire du script assimile partiellement `$e` à un titre parallèle : il doit être corrigé. `$e` correspond au complément du titre ; le titre parallèle est en `$d`, non extrait actuellement. Ajouter `$d` relève d’un choix d’enrichissement explicite. Référence : [ABES — zone 200](https://documentation.abes.fr/sudoc/formats/unmb/zones/200.htm).
-
 **Travaux universitaires.** Le script distingue `m` et `7` à la position 4 de `105$a`. La documentation Sudoc associe ces codes aux thèses et mémoires originels, et explique la correspondance entre sous-zones de saisie et positions du format d’export. La recette doit couvrir cette conversion et éviter de tester uniquement des exemples au format de saisie. Référence : [ABES — zone 105](https://documentation.abes.fr/sudoc/formats/unmb/zones/105.htm).
 
 **Adresse bibliographique.** Les indicateurs de 214 distinguent notamment publication, production, diffusion, fabrication et copyright. Le regroupement actuel de tous les `$c` sous « Éditeur » est donc insuffisant pour garantir la signification de la colonne. Référence : [ABES — zone 214](https://documentation.abes.fr/sudoc/formats/unmb/zones/214.htm).
