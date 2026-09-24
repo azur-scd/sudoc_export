@@ -83,10 +83,11 @@ _TITRE_PUNCT = {"a": "", "e": " : ", "h": ". ", "i": ", "}
 def get_titre_200(record):
     """Construit le titre avec ponctuation ISBD à partir du champ 200.
     $a Titre propre
-    $e Titre parallèle / sous-titre  ->  précédé de ' : '
+    $e Sous-titre                    ->  précédé de ' : '
     $h Numéro de partie              ->  précédé de '. '
     $i Titre de partie               ->  précédé de ', '
     Plusieurs occurrences du 200 (rare) sont séparées par ' ; '.
+    Les titres parallèles ($d) ne sont pas exploités.
     """
     titres = []
     for field in record.findall("datafield[@tag='200']"):
