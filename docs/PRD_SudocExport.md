@@ -100,9 +100,6 @@ Source : [script à la révision étudiée](https://github.com/azur-scd/sudoc_ex
 
 | Sujet | README | Code |
 | --- | --- | --- |
-| Service interrogé | Annonce une API SRU | Utilise directement l’URL `{ppn}.xml` |
-| Sous-titre | Annonce une colonne séparée | L’intègre à la colonne « Titre » |
-| Colonnes | Ne mentionne pas tous les champs | Ajoute notamment Date codée, Pays d’édition et EAN |
 | Type de document | Présente seulement la position 6 du leader | Combine positions 6 et 7, puis affine avec `105$a` |
 | Description physique | Annonce `215$a$c$d` | Extrait uniquement `215$a` |
 | Import et réglages | Documentation partielle | Import texte, délai réglable et sauvegardes périodiques présents |
