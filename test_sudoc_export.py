@@ -159,6 +159,33 @@ class ParseRecord214Tests(unittest.TestCase):
         self.assertEqual(data["lieu"], "Marseille")
         self.assertEqual(data["date"], "2024 ; 2023")
 
+    def test_214_d_with_ind2_four_is_kept_while_publisher_falls_back(self):
+        record = ET.fromstring(
+            """
+            <record>
+              <controlfield tag="001">123456789</controlfield>
+              <leader>00000nam a2200000   4500</leader>
+              <datafield tag="200"><subfield code="a">Titre</subfield></datafield>
+              <datafield tag="214" ind1=" " ind2="4">
+                <subfield code="a">Paris</subfield>
+                <subfield code="c">Éditeur non retenu</subfield>
+                <subfield code="d">2024</subfield>
+              </datafield>
+              <datafield tag="210" ind1=" " ind2=" ">
+                <subfield code="a">Lyon</subfield>
+                <subfield code="c">Éditeur 210</subfield>
+                <subfield code="d">1999</subfield>
+              </datafield>
+            </record>
+            """
+        )
+
+        data = parse_record(record)
+
+        self.assertEqual(data["editeur"], "Éditeur 210")
+        self.assertEqual(data["lieu"], "Lyon")
+        self.assertEqual(data["date"], "2024")
+
 
 if __name__ == "__main__":
     unittest.main()
