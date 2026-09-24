@@ -267,15 +267,18 @@ def parse_record(record):
             auteurs.append(v)
     data["auteurs"] = " ; ".join(auteurs)
 
-    # Éditeur / lieu / date — préférence 214 admissible, sinon 210
+    # Éditeur / lieu — préférence 214 admissible, sinon 210
     field_214 = _select_214_field(record)
     if field_214 is not None:
         data["editeur"] = _get_field_subfields(field_214, "c")
         data["lieu"]    = _get_field_subfields(field_214, "a")
-        data["date"]    = _get_field_subfields(field_214, "d")
     else:
         data["editeur"] = get_subfields(record, "210", "c")
         data["lieu"]    = get_subfields(record, "210", "a")
+
+    # Date — préférence 214, indépendamment de l'indicateur, sinon 210
+    data["date"] = get_subfields(record, "214", "d")
+    if not data["date"]:
         data["date"]    = get_subfields(record, "210", "d")
 
     # Date codée : positions 9-12 de la zone 100 $a (lecture brute, sans nettoyage)

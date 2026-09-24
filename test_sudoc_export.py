@@ -125,9 +125,9 @@ class ParseRecord214Tests(unittest.TestCase):
 
         self.assertEqual(data["editeur"], "Éditeur 210")
         self.assertEqual(data["lieu"], "Lyon")
-        self.assertEqual(data["date"], "1999")
+        self.assertEqual(data["date"], "2024")
 
-    def test_selected_214_keeps_place_and_date_from_same_field(self):
+    def test_214_d_is_extracted_independently_of_selected_publisher_field(self):
         record = ET.fromstring(
             """
             <record>
@@ -157,7 +157,7 @@ class ParseRecord214Tests(unittest.TestCase):
 
         self.assertEqual(data["editeur"], "Éditeur retenu")
         self.assertEqual(data["lieu"], "Marseille")
-        self.assertEqual(data["date"], "2023")
+        self.assertEqual(data["date"], "2024 ; 2023")
 
 
 if __name__ == "__main__":
